@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "soundcloud", "scupload\scupload.vcproj", "{A28041FB-59CC-4E82-B357-473BFB6D0B22}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib_json", "..\jsoncpp-src-0.6.0-rc2\makefiles\vs71\lib_json.vcproj", "{B84F7231-16CE-41D8-8C08-7B523FF4225B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		dummy|Win32 = dummy|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A28041FB-59CC-4E82-B357-473BFB6D0B22}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A28041FB-59CC-4E82-B357-473BFB6D0B22}.Debug|Win32.Build.0 = Debug|Win32
+		{A28041FB-59CC-4E82-B357-473BFB6D0B22}.dummy|Win32.ActiveCfg = Debug|Win32
+		{A28041FB-59CC-4E82-B357-473BFB6D0B22}.dummy|Win32.Build.0 = Debug|Win32
+		{A28041FB-59CC-4E82-B357-473BFB6D0B22}.Release|Win32.ActiveCfg = Release|Win32
+		{A28041FB-59CC-4E82-B357-473BFB6D0B22}.Release|Win32.Build.0 = Release|Win32
+		{B84F7231-16CE-41D8-8C08-7B523FF4225B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B84F7231-16CE-41D8-8C08-7B523FF4225B}.Debug|Win32.Build.0 = Debug|Win32
+		{B84F7231-16CE-41D8-8C08-7B523FF4225B}.dummy|Win32.ActiveCfg = dummy|Win32
+		{B84F7231-16CE-41D8-8C08-7B523FF4225B}.dummy|Win32.Build.0 = dummy|Win32
+		{B84F7231-16CE-41D8-8C08-7B523FF4225B}.Release|Win32.ActiveCfg = Release|Win32
+		{B84F7231-16CE-41D8-8C08-7B523FF4225B}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

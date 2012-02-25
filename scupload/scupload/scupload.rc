@@ -1,0 +1,208 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#ifndef APSTUDIO_INVOKED
+#include "targetver.h"
+#endif
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#ifndef APSTUDIO_INVOKED\r\n"
+    "#include ""targetver.h""\r\n"
+    "#endif\r\n"
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#include ""res\\scupload.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""     // Standard components\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_ICON1               ICON                    "C:\\Users\\Jonas\\Dropbox\\Projects\\sc-resources\\icon\\sc-upload.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_SCUPLOAD_DIALOG DIALOGEX 0, 0, 355, 213
+STYLE DS_SETFONT | DS_MODALFRAME | DS_SETFOREGROUND | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_APPWINDOW
+CAPTION "SoundCloud"
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+    EDITTEXT        IDC_TITLEEDITOR,55,43,113,14,ES_AUTOHSCROLL | NOT WS_VISIBLE
+    EDITTEXT        IDC_TAGSEDITOR,55,65,113,23,ES_AUTOHSCROLL | NOT WS_VISIBLE
+    COMBOBOX        IDC_LICENSECOMBO,55,96,100,78,CBS_DROPDOWNLIST | NOT WS_VISIBLE | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Choose...",IDC_PIC_BUTTON,103,151,50,14,NOT WS_VISIBLE
+    CONTROL         "Public",IDC_RADIOPUBLIC,"Button",BS_AUTORADIOBUTTON | NOT WS_VISIBLE | WS_GROUP | WS_TABSTOP,209,44,34,10,WS_EX_TRANSPARENT
+    CONTROL         "Private",IDC_RADIOPRIVATE,"Button",BS_AUTORADIOBUTTON | NOT WS_VISIBLE | WS_TABSTOP,273,44,39,10,WS_EX_TRANSPARENT
+    CONTROL         "Usage:",IDC_USAGE,"SysLink",NOT WS_VISIBLE | WS_TABSTOP,34,34,203,99,WS_EX_TRANSPARENT
+    LISTBOX         IDC_SHARINGLIST,210,74,120,61,LBS_SORT | LBS_OWNERDRAWFIXED | LBS_HASSTRINGS | LBS_NOINTEGRALHEIGHT | LBS_NOSEL | NOT WS_VISIBLE | WS_VSCROLL | WS_TABSTOP
+    DEFPUSHBUTTON   "Retry",IDACTION,240,190,50,14,NOT WS_VISIBLE
+    PUSHBUTTON      "Cancel",IDCANCEL,299,190,50,14,NOT WS_VISIBLE
+    PUSHBUTTON      "Log out",IDC_LOGOUTBUTTON,309,6,40,14,NOT WS_VISIBLE
+    PUSHBUTTON      "Copy link",IDC_OPENBUTTON,55,115,53,15,NOT WS_VISIBLE
+    CONTROL         "",IDC_PROGRESS,"msctls_progress32",NOT WS_VISIBLE,55,95,249,14
+    CTEXT           "Connecting...",IDC_STATUS,62,85,226,8,0,WS_EX_TRANSPARENT
+    CONTROL         "User greeting",IDC_USERNAME,"Static",SS_LEFTNOWORDWRAP | NOT WS_VISIBLE | WS_GROUP,27,9,191,8,WS_EX_TRANSPARENT
+    RTEXT           "Title:",IDC_TITLELABEL,15,45,33,8,NOT WS_VISIBLE
+    RTEXT           "Tags:",IDC_TAGLABEL,29,67,19,8,NOT WS_VISIBLE
+    GROUPBOX        "",IDC_METADATA,7,22,341,161,NOT WS_VISIBLE
+    CONTROL         "",IDC_PICTURE,"Static",SS_BITMAP | SS_NOTIFY | SS_CENTERIMAGE | NOT WS_VISIBLE,55,127,41,38,WS_EX_STATICEDGE
+    LTEXT           "Upload a picture for your sound",IDC_PICTURELABEL,103,126,65,24,NOT WS_VISIBLE
+    CONTROL         "Share to your networks:",IDC_SHARELABEL,"Static",SS_LEFTNOWORDWRAP | NOT WS_VISIBLE | WS_GROUP,210,63,131,11,WS_EX_TRANSPARENT
+    RTEXT           "License:",IDC_LICENSELAB,15,98,33,8,NOT WS_VISIBLE
+    CONTROL         "To connect another network go to <a href=""http://soundcloud.com/settings/connections"">soundcloud.com/settings/connections</a>",IDC_CONNECTIONLABEL,
+                    "SysLink",NOT WS_VISIBLE | WS_TABSTOP,210,149,122,19
+    CONTROL         "",IDC_AVATAR,"Static",SS_BITMAP | SS_CENTERIMAGE | NOT WS_VISIBLE,7,7,15,13,WS_EX_STATICEDGE
+    LTEXT           "Upload as ""Private"" to get a secret link to share.",IDC_PRIVATE_INFO1,210,64,120,25,NOT WS_VISIBLE
+    LTEXT           "Private sounds are not shared to your network.",IDC_PRIVATE_INFO2,210,89,119,21,NOT WS_VISIBLE
+    CONTROL         "<a>perma link</a>",IDC_PERMALINK,"SysLink",NOT WS_VISIBLE | WS_TABSTOP,56,97,285,13
+    LTEXT           "Uploading ...",IDC_STATUS2,56,80,281,8,NOT WS_VISIBLE
+    CONTROL         139,IDC_LICENSE_HELP,"Static",SS_BITMAP | SS_NOTIFY | NOT WS_VISIBLE,158,97,11,10
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904e4"
+        BEGIN
+            VALUE "CompanyName", "SoundCloud"
+            VALUE "FileDescription", "SoundCloud Uploader"
+            VALUE "FileVersion", "1.0.0.1"
+            VALUE "InternalName", "scupload.exe"
+            VALUE "LegalCopyright", "(c) SoundCloud.  All rights reserved."
+            VALUE "OriginalFilename", "scupload.exe"
+            VALUE "ProductName", "SoundCloud Uploader"
+            VALUE "ProductVersion", "1.0.0.1"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1252
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_SCUPLOAD_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 348
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 206
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_BITMAP2             BITMAP                  "C:\\Users\\Jonas\\Dropbox\\Projects\\sc-resources\\help.bmp"
+IDB_BITMAP3             BITMAP                  "C:\\Users\\Jonas\\Dropbox\\Projects\\sc-resources\\cloud_wbg.bmp"
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#include "res\scupload.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"     // Standard components
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
