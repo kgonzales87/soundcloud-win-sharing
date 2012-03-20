@@ -106,6 +106,7 @@ private:
 	CSize m_Size1;
 	CSize m_Size2;
 	CSize m_Size3;
+	static const int BORDER;
 
 	long OnUploadProgress(WPARAM wParam, LPARAM lParam);
 	void OnNavigateComplete(LPDISPATCH pDisp, VARIANT* szUrl);
@@ -128,4 +129,5 @@ private:
 	void UpdateDisplay(CString statusMessage);
 	void UpdateWindowTitle(const CString& title);
 	void ShowAuth(void);
+	void ShowUploadCompleted(const LPCTSTR url);
 };

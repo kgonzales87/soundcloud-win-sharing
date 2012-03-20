@@ -18,6 +18,8 @@
 #define new DEBUG_NEW
 #endif
 
+const int SCUploadDlg::BORDER = 20;
+
 SCUploadDlg::SCUploadDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(SCUploadDlg::IDD, pParent)
 	, m_pUserProfile(NULL)
@@ -627,11 +629,7 @@ void SCUploadDlg::UpdateDisplay(CString statusMessage)
 		SetDlgItemText(IDCANCEL, _T("Done"));
 		SetDefID(IDCANCEL);
 
-		CString formattedUrl;
-		formattedUrl.Format(_T("<a href=\"%s\">%s</a>"), statusMessage, statusMessage);
-		m_PermaLink.SetWindowText(formattedUrl);
-		m_PermaLink.ShowWindow(TRUE);
-		m_OpenButton.ShowWindow(TRUE);
+		ShowUploadCompleted(statusMessage);
 		statusMessage.Format(_T("\"%s\" is now available at"), title);
 		break;
 	}
@@ -645,8 +643,27 @@ void SCUploadDlg::UpdateDisplay(CString statusMessage)
 	else if(m_appState > UploadConfig)
 	{
 		m_Status.ShowWindow(FALSE);
+
+		CRect rect, wndRect, progRect;
+		GetClientRect(&wndRect);
+		m_Status2.GetWindowRect(&rect);
+		ScreenToClient(&rect);
+		m_ProgressCtrl.GetWindowRect(&progRect);
+		ScreenToClient(&progRect);
+		UINT textFlags = SWP_NOZORDER | SWP_SHOWWINDOW;
+
+		if(m_appState == UploadSucceeded)
+		{
+			m_Status2.ModifyStyle(SS_LEFTNOWORDWRAP, SS_CENTER);
+			m_Status2.SetWindowPos(NULL, BORDER, rect.top, wndRect.Width() - 2 * BORDER, rect.Height(), textFlags);
+		}
+		else
+		{
+			m_Status2.ModifyStyle(SS_CENTER, SS_LEFTNOWORDWRAP);
+			m_Status2.SetWindowPos(NULL, progRect.left, rect.top, wndRect.Width() - (progRect.left + BORDER), rect.Height(), textFlags);
+		}
 		m_Status2.SetWindowTextW(statusMessage);
-		m_Status2.ShowWindow(TRUE);
+		m_Status2.Invalidate();
 	}
 	else
 	{
@@ -1006,15 +1023,14 @@ void SCUploadDlg::OnSize(UINT nType, int cx, int cy)
 {
 	CDialog::OnSize(nType, cx, cy);
 
-	const int border = 20;
 	if(m_Status.m_hWnd != NULL)
 	{
 		CRect rect;
 		m_Status.GetWindowRect(&rect);
 		ScreenToClient(&rect);
-		int x = border;
+		int x = BORDER;
 		int y = (cy / 2) - (rect.Height() / 2);
-		int w = cx - (2 * border);
+		int w = cx - (2 * BORDER);
 		int h = rect.Height();
 		m_Status.SetWindowPos(NULL, x, y, w, h, SWP_NOZORDER);
 	}
@@ -1045,4 +1061,35 @@ void SCUploadDlg::OnStnClickedLicenseHelp()
 {
 	CString licenseHelpUrl = SCConnector::LICENSE_HELP_URL;
 	OpenBrowser(licenseHelpUrl);
+}
+
+void SCUploadDlg::ShowUploadCompleted(const LPCTSTR url)
+{
+	// Measure link text on-screen size
+	CDC* pDc = GetDC();
+	CFont* pLinkFont = &afxGlobalData.fontDefaultGUIUnderline;
+	CGdiObject *pOldFont = pDc->SelectObject(pLinkFont);
+	CSize textSize = pDc->GetTextExtent(url);
+	ReleaseDC(pDc);
+	pDc->SelectObject(pOldFont);
+
+	// Adjust control position
+	CRect rect, wndRect;
+	m_PermaLink.GetWindowRect(&rect);
+	ScreenToClient(&rect);
+	GetClientRect(&wndRect);
+	int left = (textSize.cx >= wndRect.Width()) ? BORDER :
+		((wndRect.Width() - textSize.cx) / 2);
+	int width = wndRect.Width() - (left + BORDER);
+	m_PermaLink.SetWindowPos(NULL, left, rect.top, width, rect.Height(), SWP_NOZORDER | SWP_SHOWWINDOW);
+
+	// Set control content
+	CString formattedUrl;
+	formattedUrl.Format(_T("<a href=\"%s\">%s</a>"), url, url);
+	m_PermaLink.SetWindowText(formattedUrl);
+	
+	m_OpenButton.GetWindowRect(&rect);
+	ScreenToClient(&rect);
+	left = (wndRect.Width() - rect.Width()) / 2;
+	m_OpenButton.SetWindowPos(NULL, left, rect.top, rect.Width(), rect.Height(), SWP_NOZORDER | SWP_NOSIZE | SWP_SHOWWINDOW);
 }
