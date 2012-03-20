@@ -723,6 +723,8 @@ bool SCUploadDlg::ShowAuthView()
 		return false;
 	}
     
+	m_pBrowser->put_Silent(VARIANT_TRUE);
+
     // Navigate to the soundcloud auth page
     COleVariant noArg;
 	CString url = m_Connector.GetSusiUrl();
