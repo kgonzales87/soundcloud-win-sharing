@@ -364,11 +364,14 @@ UINT SCConnector::PostFile(LPVOID pParam)
 
 CString* SCConnector::GetMessageFromResponse(int resultCode, CString* pResponse, bool isPrivate)
 {
-	//Parse the permalink_url from the response
-	//e.g. "permalink_url": "http://soundcloud.com/jwagener/a-nice-track-title-1"
 	if(pResponse == NULL)
 		return NULL;
 
+	if(resultCode == MultipartPostMethod::ENCODING_ERROR)
+		return new CString(*pResponse); // the plain error message
+
+	//Parse the permalink_url from the response
+	//e.g. "permalink_url": "http://soundcloud.com/jwagener/a-nice-track-title-1"
 	CString* pMessage = NULL;
 	tregex* pattern = NULL;
 	if(400 <= resultCode)
@@ -379,7 +382,7 @@ CString* SCConnector::GetMessageFromResponse(int resultCode, CString* pResponse,
 	if(pattern == NULL)
 	{
 		CString logMessage;
-		logMessage.Format(_T("Unable get message from unexpected response: %d"), resultCode);
+		logMessage.Format(_T("Unable to get message from unexpected response: %d"), resultCode);
 		OutputDebugString(logMessage);
 		OutputDebugString(*pResponse);
 		return NULL;

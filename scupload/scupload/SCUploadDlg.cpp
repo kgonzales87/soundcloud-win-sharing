@@ -573,6 +573,7 @@ void SCUploadDlg::UpdateDisplay(CString statusMessage)
 		m_Username.ShowWindow(FALSE);
 		m_Avatar.ShowWindow(FALSE);
 		m_LogOutButton.ShowWindow(FALSE);
+		m_ProgressCtrl.ShowWindow(FALSE);
 		ShowUploadConfig(FALSE);
 		m_OpenButton.ShowWindow(FALSE);
 		m_PermaLink.ShowWindow(FALSE);

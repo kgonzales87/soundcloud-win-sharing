@@ -6,6 +6,7 @@
 const CString MultipartPostMethod::MULTIPART_BOUNDARY = _T("QQQSPACETHEFINALFRONTIERQQQ");
 const DWORD MultipartPostMethod::CHUNKLENGTH = 16384;
 const CString MultipartPostMethod::END_TOKEN = _T("\r\n");
+const DWORD MultipartPostMethod::ENCODING_ERROR = 10;
 
 MultipartPostMethod::MultipartPostMethod(PROGRESSCALLBACK f)
 {
@@ -49,10 +50,36 @@ DWORD MultipartPostMethod::SendRequest(CHttpConnection* pCon, const CString& url
 			AfxThrowInternetException(pHttpFile->GetContext());
 
 		// Send track properties
-		CT2CA pPostBeginBuffer (textParts);
-		pHttpFile->Write((LPSTR)pPostBeginBuffer, textParts.GetLength());
+		//CT2CA pPostBeginBuffer (textParts);
+		//pHttpFile->Write((LPSTR)pPostBeginBuffer, textParts.GetLength());
+		//pHttpFile->Flush();
+		//progress += textParts.GetLength();
+		
+		CStringA text;
+		CStringW wideText = textParts;
+		int utf8Length = ::WideCharToMultiByte(CP_UTF8, 0, (LPCWSTR)wideText, -1, NULL, 0, NULL, NULL);
+		LPSTR utf8Bytes = text.GetBuffer(utf8Length);
+		if(::WideCharToMultiByte(CP_UTF8, 0, (LPCWSTR)wideText, -1, utf8Bytes, utf8Length, NULL, NULL) == 0)
+		{
+			DWORD err = ::GetLastError();
+			text.ReleaseBuffer();
+			CString log;
+			log.Format(_T("Failed to encode metadata as UTF-8: %d"), err);
+			OutputDebugString(log + _T("\n"));
+			pResponse = new CString(log);
+			if(pHttpFile != NULL)
+			{
+				pHttpFile->Abort();
+				delete pHttpFile;
+			}
+			return ENCODING_ERROR;
+		}
+		text.ReleaseBuffer();
+
+		pHttpFile->Write(text, text.GetLength());
 		pHttpFile->Flush();
-		progress += textParts.GetLength();
+
+		progress += utf8Length;
 		m_fProgressCallback(progress, totalLength);
 		
 		// Send file data 
@@ -84,11 +111,15 @@ DWORD MultipartPostMethod::SendRequest(CHttpConnection* pCon, const CString& url
 		{
 			OutputDebugString(_T("MultipartPostMethod::SendRequest: Exception on EndRequest!\n"));
 			if(progress == totalLength)
+			{
 				dwRet = 201; // Recover from timeout with completed upload
+				ex->Delete();
+			}
 			else
 				throw;
 		}
 		
+		ASSERT(progress == totalLength);
 		m_fProgressCallback(totalLength, totalLength);
 		OutputDebugString(_T("MultipartPostMethod::SendRequest: Upload complete!\n"));
 
@@ -117,9 +148,6 @@ DWORD MultipartPostMethod::SendRequest(CHttpConnection* pCon, const CString& url
 
 		if(pHttpFile != NULL)
 		{
-			CFileStatus status;
-			pHttpFile->GetStatus(status);
-
 			pHttpFile->QueryInfoStatusCode(dwRet);
 			debugMsg.Format(_T("MultipartPostMethod::SendRequest: Exception with http code %d\n"), dwRet); 
 			OutputDebugString(debugMsg);
@@ -153,8 +181,8 @@ void MultipartPostMethod::AddTextPart(const CString& name, const CString& data)
 	format += _T("\r\n");
 
 	partHeader.Format(format, MULTIPART_BOUNDARY, name, data);
-
-	totalLength += partHeader.GetLength();
+	int mbLength = WideCharToMultiByte(CP_UTF8, 0, (PCWSTR)partHeader, partHeader.GetLength(), NULL, 0, NULL, NULL);
+	totalLength += mbLength;
 	textParts += partHeader;
 }
 

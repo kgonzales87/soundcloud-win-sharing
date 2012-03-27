@@ -33,4 +33,6 @@ public:
 	DWORD SendRequest(CHttpConnection* connection, const CString& url, DWORD dwFlags, CString*& pResponse);
 	void WriteBinaryData(CHttpFile* pHttpFile, const CString& header, CFile* file);
 	void Close(void);
+
+	static const DWORD ENCODING_ERROR;
 };
