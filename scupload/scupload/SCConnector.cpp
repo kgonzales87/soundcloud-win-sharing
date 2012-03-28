@@ -40,6 +40,7 @@ SCConnector::SCConnector()
 {
 	m_CmdLineInfo = NULL;
 	m_PersistentToken = NULL;
+	m_UserAgent.Format(_T("User-Agent: Desktop-Sharing-Kit/1.0 (%s)\r\n"), GetOsId());
 	m_pSession = new CInternetSession(
 		_T("Desktop Sharing Kit"), 1, PRE_CONFIG_INTERNET_ACCESS,
 		NULL, NULL, INTERNET_FLAG_DONT_CACHE);
@@ -55,6 +56,19 @@ SCConnector::~SCConnector()
 
 	m_pSession->Close();
 	delete m_pSession;
+}
+
+CString SCConnector::GetOsId(void)
+{
+	CString osId;
+	OSVERSIONINFOEX verInfo;
+	ZeroMemory(&verInfo, sizeof(OSVERSIONINFOEX));
+	verInfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+	BOOL bOsVersionInfoEx = GetVersionEx((OSVERSIONINFO*) &verInfo);
+	if(bOsVersionInfoEx != TRUE )
+		return osId;
+	osId.Format(_T("Win %d.%d.%d"), verInfo.dwMajorVersion, verInfo.dwMinorVersion, verInfo.dwBuildNumber);
+	return osId;
 }
 
 //
@@ -118,6 +132,7 @@ void SCConnector::UploadFile()
 	tParam->trackProperties = &m_CmdLineInfo->m_mTrackProperties;
 	tParam->hWnd = m_hCallbackWnd;
 	tParam->session = m_pSession;
+	tParam->userAgent = &m_UserAgent;
 	
 	AfxBeginThread(SCConnector::PostFile, tParam);
 }
@@ -294,7 +309,7 @@ UINT SCConnector::PostFile(LPVOID pParam)
 					INTERNET_FLAG_IGNORE_CERT_CN_INVALID |
 					INTERNET_FLAG_KEEP_CONNECTION;
 	
-	MultipartPostMethod postMethod(SCConnector::UploadProgress);
+	MultipartPostMethod postMethod(SCConnector::UploadProgress, *tParam->userAgent);
 
 	try
 	{

@@ -26,6 +26,7 @@ typedef struct scPostThreadParam
 	CMapStringToString* trackProperties;
 	HWND hWnd;
 	CInternetSession* session;
+	CString* userAgent;
 } UPLOAD_THREADPARAM;
 
 // Offers a range of asynchronous requests to SoundCloud web services.
@@ -70,13 +71,15 @@ protected:
 
 private:
 	CInternetSession* m_pSession;
+	CString m_UserAgent;
+	CString GetOsId(void);
 	static const CString PROFILE_URL;
 	static UINT RequestHead(LPVOID pParam);
 	static UINT RequestProfile(LPVOID pParam);
 	static UINT PostFile(LPVOID pParam);
 	static void UploadProgress(DWORD progress, DWORD total);
 	static CString* GetMessageFromResponse(int resultCode, CString* pResponse, bool isPrivate);
-
+	
 	static const INTERNET_PORT PORT;
 	static const CString SERVER;
 	static const CString OAUTH_TOKEN;

@@ -17,7 +17,8 @@ private:
 	CMapStringToPtr fileParts;
 	UINT totalLength;
 	UINT progress;
-	CString header;
+	CString ctHeader;
+	CString uaHeader;
 	CString endPart;
 	static const CString END_TOKEN;
 	static const DWORD CHUNKLENGTH;
@@ -25,7 +26,7 @@ private:
 	void Init(void);
 
 public:
-	MultipartPostMethod(PROGRESSCALLBACK f);
+	MultipartPostMethod(PROGRESSCALLBACK f, LPCTSTR userAgent);
 	~MultipartPostMethod(void);
 	void AddTextPart(const CString& name, const CString& data);
 	int AddBinaryPart(const CString& name, const CString& filePath);

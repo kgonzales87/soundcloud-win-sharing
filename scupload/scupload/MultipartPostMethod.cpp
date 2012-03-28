@@ -8,11 +8,12 @@ const DWORD MultipartPostMethod::CHUNKLENGTH = 16384;
 const CString MultipartPostMethod::END_TOKEN = _T("\r\n");
 const DWORD MultipartPostMethod::ENCODING_ERROR = 10;
 
-MultipartPostMethod::MultipartPostMethod(PROGRESSCALLBACK f)
+MultipartPostMethod::MultipartPostMethod(PROGRESSCALLBACK f, LPCTSTR userAgent)
 {
 	m_fProgressCallback = f;
 	totalLength = 0;
 	progress = 0;
+	uaHeader = userAgent;
 	Init();
 }
 
@@ -26,7 +27,7 @@ void MultipartPostMethod::Init(void)
 
 	// Set header
 	format = _T("Content-Type: multipart/form-data; boundary=%s\r\n");
-	header.Format(format, MULTIPART_BOUNDARY);
+	ctHeader.Format(format, MULTIPART_BOUNDARY);
 
 	// Set end part which is appended at the end of a request
 	format = _T("--%s--\r\n");
@@ -44,17 +45,13 @@ DWORD MultipartPostMethod::SendRequest(CHttpConnection* pCon, const CString& url
 	try
 	{
 		pHttpFile = pCon->OpenRequest(CHttpConnection::HTTP_VERB_POST, url, 0, 1, 0, 0, dwFlags);
-		pHttpFile->AddRequestHeaders(header);
+		pHttpFile->AddRequestHeaders(ctHeader);
+		pHttpFile->AddRequestHeaders(uaHeader, HTTP_ADDREQ_FLAG_REPLACE);
 		
 		if(!pHttpFile->SendRequestEx(totalLength, HSR_SYNC | HSR_INITIATE))
 			AfxThrowInternetException(pHttpFile->GetContext());
 
-		// Send track properties
-		//CT2CA pPostBeginBuffer (textParts);
-		//pHttpFile->Write((LPSTR)pPostBeginBuffer, textParts.GetLength());
-		//pHttpFile->Flush();
-		//progress += textParts.GetLength();
-		
+		// Send track properties UTF-8 encoded
 		CStringA text;
 		CStringW wideText = textParts;
 		int utf8Length = ::WideCharToMultiByte(CP_UTF8, 0, (LPCWSTR)wideText, -1, NULL, 0, NULL, NULL);
@@ -75,11 +72,11 @@ DWORD MultipartPostMethod::SendRequest(CHttpConnection* pCon, const CString& url
 			return ENCODING_ERROR;
 		}
 		text.ReleaseBuffer();
-
+		ASSERT(text.GetLength() + 1 == utf8Length); //utf8Length includes terminating \0 char
 		pHttpFile->Write(text, text.GetLength());
 		pHttpFile->Flush();
 
-		progress += utf8Length;
+		progress += text.GetLength();
 		m_fProgressCallback(progress, totalLength);
 		
 		// Send file data 
@@ -181,8 +178,8 @@ void MultipartPostMethod::AddTextPart(const CString& name, const CString& data)
 	format += _T("\r\n");
 
 	partHeader.Format(format, MULTIPART_BOUNDARY, name, data);
-	int mbLength = WideCharToMultiByte(CP_UTF8, 0, (PCWSTR)partHeader, partHeader.GetLength(), NULL, 0, NULL, NULL);
-	totalLength += mbLength;
+	int mbLength = ::WideCharToMultiByte(CP_UTF8, 0, (LPCWSTR)partHeader, -1, NULL, 0, NULL, NULL);
+	totalLength += (mbLength - 1); //mbLength includes terminating \0 char!
 	textParts += partHeader;
 }
 
