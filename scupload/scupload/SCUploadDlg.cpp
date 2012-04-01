@@ -1043,6 +1043,35 @@ void SCUploadDlg::OnSize(UINT nType, int cx, int cy)
 		m_pBrowser->MoveWindow(0, 0, cx, cy, FALSE);
 		this->Invalidate();
 	}
+
+	if(m_appState >= UploadConfig)
+	{
+		// Calculate DPI-Aware Window Size
+		CWnd* cBtn = GetDlgItem(IDCANCEL);
+		CWnd* lBtn = GetDlgItem(IDC_LOGOUTBUTTON);
+		if(cBtn != NULL && lBtn != NULL)
+		{
+			RECT clientRect, winRect;
+			POINT delta;
+			GetClientRect(&clientRect);
+			GetWindowRect(&winRect);
+			delta.x = (winRect.right - winRect.left) - clientRect.right;
+			delta.y = (winRect.bottom - winRect.top) - clientRect.bottom;
+
+			RECT cRect;
+			cBtn->GetWindowRect(&cRect);
+			ScreenToClient(&cRect);
+			RECT lRect;
+			lBtn->GetWindowRect(&lRect);
+			ScreenToClient(&lRect);
+
+			m_Size2.cx = cRect.right + lRect.top + delta.x;
+			m_Size2.cy = cRect.bottom + lRect.top + delta.y;
+
+			if(cx < m_Size2.cx || cy < m_Size2.cy)
+				UpdateWindowSize();
+		}
+	}
 }
 
 void SCUploadDlg::OnEnChangeTitleeditor()

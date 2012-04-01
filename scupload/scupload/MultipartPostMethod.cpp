@@ -4,7 +4,7 @@
 #include "MultipartPostMethod.h"
 
 const CString MultipartPostMethod::MULTIPART_BOUNDARY = _T("QQQSPACETHEFINALFRONTIERQQQ");
-const DWORD MultipartPostMethod::CHUNKLENGTH = 16384;
+const DWORD MultipartPostMethod::CHUNKLENGTH = 1024;
 const CString MultipartPostMethod::END_TOKEN = _T("\r\n");
 const DWORD MultipartPostMethod::ENCODING_ERROR = 10;
 
@@ -242,22 +242,34 @@ void MultipartPostMethod::WriteBinaryData(CHttpFile* pHttpFile, const CString& h
 	//Send file data
 	void* pBuffer = NULL;
 	DWORD dwReadLength = -1;
+	
 	try
 	{
 		pBuffer = malloc(CHUNKLENGTH);
 		if(pBuffer == NULL)
 			AfxThrowMemoryException();
 
+		CString debugMsg;
+		debugMsg.Format(_T("Starting to read/write %s"), file->GetFileName());
+		OutputDebugString(debugMsg);
+
 		while(0 != dwReadLength)
 		{
 			dwReadLength = file->Read(pBuffer, CHUNKLENGTH);
+			
+			debugMsg.Format(_T("Read %d bytes\n"), dwReadLength);
+			OutputDebugString(debugMsg);
+
 			if (0 != dwReadLength)
 			{
 				pHttpFile->Write(pBuffer, dwReadLength);
+				
+				debugMsg.Format(_T("Wrote %d bytes to http stream\n"), dwReadLength);
+				OutputDebugString(debugMsg);
+				
 				pHttpFile->Flush();
 				progress += (UINT)dwReadLength;
 
-				CString debugMsg;
 				debugMsg.Format(_T("MultipartPostMethod::WriteBinaryData: Uploaded %d / %d bytes\n"),
 					progress, totalLength, dwReadLength);
 				OutputDebugString(debugMsg);
