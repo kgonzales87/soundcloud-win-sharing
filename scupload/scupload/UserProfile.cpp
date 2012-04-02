@@ -5,6 +5,7 @@
 #include "UserProfile.h"
 #include "SharingConnection.h"
 #include "FileUtility.h"
+#include "WebUtility.h"
 
 using namespace boost;
 using namespace Json;
@@ -20,6 +21,7 @@ UserProfile::UserProfile(CString*& json)
 {
 	m_JsonProfile = CString(*json);
 	m_Username = ParseValue(KEY_USERNAME);
+	m_Username = WebUtility::UnicodeEntityDecode(m_Username);
 	m_AvatarUrl = ParseValue(KEY_AVATAR);
 	m_Connections = new CList<SharingConnection*>();
 }
@@ -55,17 +57,36 @@ void UserProfile::SetConnections(CString*& json)
 	{
 		ASSERT(root[i].isObject());
 		
+		CString displayName;
 		CStringA type = root[i].get("type", "").asCString();
-		CStringA displayName = root[i].get("display_name", "").asCString();
+		CStringA aDisplayName = root[i].get("display_name", "").asCString();
+
+		// jsoncpp retains the original encoding in raw char buffer
+		// we assume UTF-8 multibyte encoding and transform the buffer accordingly
+		CStringW wDisplayName;
+		int wLength = MultiByteToWideChar(CP_UTF8, 0, aDisplayName, -1, NULL, 0);
+		LPWSTR wBuffer = wDisplayName.GetBuffer(wLength);
+		if(MultiByteToWideChar(CP_UTF8, 0, aDisplayName, -1, wBuffer, wLength) != 0)
+		{
+			CW2T tBuffer(wDisplayName);
+			displayName.Format(_T("%s"), tBuffer);
+		}
+		else
+		{
+			CA2T aBuffer(aDisplayName);
+			displayName.Format(_T("%s"), aBuffer);
+		}
+		wDisplayName.ReleaseBuffer();
+
 		//bool publish = root[i].get("post_publish", false).asBool();
 		int cid = root[i].get("id", -1).asInt();
 		if(cid == -1)
 		{
-			CStringA debugMessage;
+			CString debugMessage;
 			debugMessage.Format(
-				"Failed to parse valid id for '%s' connection (%s)",
-				type, displayName);
-			OutputDebugStringA(debugMessage);
+				_T("Failed to parse valid id for '%s' connection (%s)\n"),
+				CString(type), displayName);
+			OutputDebugString(debugMessage);
 			continue;
 		}
 
@@ -85,7 +106,10 @@ void UserProfile::SetConnections(CString*& json)
 			continue;
 		}
 
-		SharingConnection* connection = new SharingConnection(cid, displayName, connectionType);
+		SharingConnection* connection = new SharingConnection(
+			cid,
+			displayName,
+			connectionType);
 		m_Connections->AddTail(connection);
 	}
 

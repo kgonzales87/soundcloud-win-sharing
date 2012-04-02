@@ -1,6 +1,6 @@
 // Copyright (c) 2012, SoundCloud Ltd.
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "Shlwapi.h"
 #include "WebUtility.h"
 
@@ -10,17 +10,10 @@ using namespace boost;
 bool WebUtility::IsSusiCancelled(const CString& url)
 {
 	// The user cancelled when following url redirect occurs:
-	// http://soundcloud.com/login?return_to=%2Fdashboard%3Ferror%3Daccess_denied%26error_description%3DThe%2Bend-user%2Bdenied%2Bthe%2Brequest
-	
-	CString decodedUrl = UrlDecode(url);
+	// http://connect.soundcloud.com/desktop?error=access_denied&error_description=The+end-user+denied+the+request
 	tregex accessDeniedPattern(_T("error=access_denied"));
-	tregex errorDescPattern(_T("error_description=The\\+end-user\\+denied\\+the\\+request"));
 	tmatch match;
-	if(regex_search(decodedUrl, match, accessDeniedPattern) &&
-		regex_search(decodedUrl, match, errorDescPattern))
-		return true;
-
-	return false;
+	return regex_search(url, match, accessDeniedPattern);
 }
 
 // Checks if SC returned a SUSI error
@@ -63,13 +56,13 @@ CString WebUtility::UrlDecode(const CString encoded)
 
 	for(int i = 0; i < encoded.GetLength(); i++)
 	{
-		wchar_t c = encoded.GetAt(i);
+		TCHAR c = encoded.GetAt(i);
 		if(c == _T('%'))
 		{
-			wchar_t encodedChar[3];		
+			TCHAR encodedChar[3];
 			encodedChar[0] = encoded.GetAt(++i);
 			encodedChar[1] = encoded.GetAt(++i);
-			encodedChar[2] = '\0';		
+			encodedChar[2] = _T('\0');
 			
 			CString decodedChar;
 			decodedChar.Format(_T("%c"), _tcstoul(encodedChar, NULL, 16));
@@ -148,4 +141,43 @@ bool WebUtility::IsOfflineMode()
 			return true;
 	
 	return false;
+}
+
+// Simplistic unicode entity decoding specific to sc data format,
+// assuming compilation with UNICODE defined
+CString WebUtility::UnicodeEntityDecode(const CString encoded)
+{
+	CString decoded;
+	tregex pattern(_T("^\\\\u([0-9a-eA-E]{4})$"));
+	tmatch match;
+
+	for(int i = 0; i < encoded.GetLength(); i++)
+	{
+		TCHAR c = encoded.GetAt(i);
+		if(i + 5 < encoded.GetLength() && c == _T('\\'))
+		{
+			CString uniSeq = encoded.Mid(i, 6);
+			if(regex_search(uniSeq, match, pattern))
+			{
+				CString uniValue = CString(match[1].first, match.length(1));
+				LPTSTR encodedChars = uniValue.GetBuffer();
+				
+				CString decodedChar;
+				decodedChar.Format(_T("%c"), _tcstoul(encodedChars, NULL, 16));
+				decoded += decodedChar;
+				uniValue.ReleaseBuffer();
+				i += 5;
+			}
+			else
+			{
+				decoded += c;
+			}
+		}
+		else
+		{
+			decoded += c;
+		}
+	}
+	
+	return decoded;
 }

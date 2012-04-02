@@ -7,7 +7,7 @@ SharingConnection::SharingConnection(void)
 {
 }
 
-SharingConnection::SharingConnection(int id, CStringA displayName, ShareType type)
+SharingConnection::SharingConnection(int id, CString displayName, ShareType type)
 {
 	m_Id = id;
 	m_DisplayName = displayName;
@@ -26,7 +26,7 @@ int SharingConnection::GetId(void)
 CString SharingConnection::GetLabel(void)
 {
 	CString label;
-	label.Format(_T("%s (%s)"), CString(m_DisplayName.GetBuffer()), GetTypeLabel(m_Type));
+	label.Format(_T("%s (%s)"), m_DisplayName, GetTypeLabel(m_Type));
 	return label;
 }
 

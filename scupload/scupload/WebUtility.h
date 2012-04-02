@@ -14,4 +14,5 @@ public:
 	static void CopyToClipboard(HWND owner, const CString& s);
 	static CString FileNameFromUrl(const CString& url);
 	static bool IsOfflineMode();
+	static CString UnicodeEntityDecode(const CString strEncodedText);
 };

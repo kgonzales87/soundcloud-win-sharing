@@ -12,13 +12,13 @@ public:
 	enum ShareType { unknown, soundcloud, tumblr, fbprofile, fbpage, twitter };
 private:
 	int m_Id;
-	CStringA m_DisplayName;
+	CString m_DisplayName;
 	ShareType m_Type;
 	static CString GetTypeLabel(ShareType type);
 
 public:
 	SharingConnection(void);
-	SharingConnection(int id, CStringA displayName, ShareType type);
+	SharingConnection(int id, CString displayName, ShareType type);
 	virtual ~SharingConnection(void);
 	CString GetLabel(void);
 	int GetId(void);
