@@ -27,7 +27,7 @@ You'll have to pass the client_id, client_secret and redirect_uri later when inv
 
 Once you've added executable to your application you can call it using it's command line interface:
 
-    C:\> soundcloud-win-sharing-1.3.5.exe /client_id:YOUR_CLIENT_ID /track[asset_data]:audio.mp3 /track[title]:"Test Sound"
+    C:\>"Share on SoundCloud.exe" /client_id:YOUR_CLIENT_ID /track[asset_data]:audio.mp3 /track[title]:"Test Sound"
 
 The arguments you can pass into the app are:
 
