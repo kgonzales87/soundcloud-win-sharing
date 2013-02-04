@@ -440,12 +440,9 @@ void SCUploadDlg::OnNavigateComplete(LPDISPATCH pDisp, VARIANT* szUrl)
 	else
 	{
 		//Parse the access_token from the redirect
-		CString token;
-		if(m_appState != SUSI_FB)
-		{
-			token = WebUtility::GetFieldValueFromUrl(url, _T("access_token"));
-		}
-		else
+		CString token = WebUtility::GetFieldValueFromUrl(url, _T("access_token"));
+		
+		if(token.IsEmpty() && m_appState == SUSI_FB)
 		{
 			CString returnTo = WebUtility::UrlDecode(
 				WebUtility::GetFieldValueFromUrl(url, _T("returnTo")));
