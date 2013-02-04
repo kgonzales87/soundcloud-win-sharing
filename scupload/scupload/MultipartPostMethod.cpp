@@ -190,7 +190,7 @@ int MultipartPostMethod::AddBinaryPart(const CString& name, const CString& fileP
 
 	CFile* file = new CFile();
 	CFileException* ex = NULL;
-	if(!file->Open(filePath, CFile::modeRead, ex)) // failure is expected
+	if(!file->Open(filePath, CFile::modeRead | CFile::shareDenyNone, ex)) // failure is expected
 	{
 		file->Abort();
 		return ex != NULL ? ex->m_cause : CFileException::genericException;
