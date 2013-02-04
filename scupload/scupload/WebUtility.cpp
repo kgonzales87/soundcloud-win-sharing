@@ -181,3 +181,26 @@ CString WebUtility::UnicodeEntityDecode(const CString encoded)
 	
 	return decoded;
 }
+
+// Transform raw UTF-8 buffer to CString
+CString WebUtility::FromUTF8MultiByte(const char* buffer)
+{
+	CString string;
+	CStringA aInput = buffer;
+	CStringW wInput;
+	int wLength = MultiByteToWideChar(CP_UTF8, 0, aInput, -1, NULL, 0);
+	LPWSTR wBuffer = wInput.GetBuffer(wLength);
+	if(MultiByteToWideChar(CP_UTF8, 0, aInput, -1, wBuffer, wLength) != 0)
+	{
+		CW2T tBuffer(wInput);
+		string.Format(_T("%s"), tBuffer);
+	}
+	else
+	{
+		// Falling back to read plain ascii
+		CA2T aBuffer(aInput);
+		string.Format(_T("%s"), aBuffer);
+	}
+	wInput.ReleaseBuffer();
+	return string;
+}

@@ -1,4 +1,4 @@
-// Copyright (c) 2012, SoundCloud Ltd.
+// Copyright (c) 2013, SoundCloud Ltd.
 
 #pragma once
 
@@ -15,4 +15,5 @@ public:
 	static CString FileNameFromUrl(const CString& url);
 	static bool IsOfflineMode();
 	static CString UnicodeEntityDecode(const CString strEncodedText);
+	static CString FromUTF8MultiByte(const char* input);
 };

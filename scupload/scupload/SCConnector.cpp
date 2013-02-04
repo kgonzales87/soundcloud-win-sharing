@@ -1,4 +1,4 @@
-// Copyright (c) 2012, SoundCloud Ltd.
+// Copyright (c) 2013, SoundCloud Ltd.
 
 // scconnector.cpp : implementation file
 
@@ -10,8 +10,7 @@
 #include "GetMethod.h"
 #include "UserProfile.h"
 #include "FileUtility.h"
-
-using namespace boost;
+#include "UploadResult.h"
 
 const CString SCConnector::AUTH_URL_TEMPLATE = _T("https://soundcloud.com/connect?scope=non-expiring&client_id=%s&redirect_uri=%s&response_type=token&display=popup");
 const CString SCConnector::REDIRECT_URL = _T("http://connect.soundcloud.com/desktop");
@@ -327,10 +326,7 @@ UINT SCConnector::PostFile(LPVOID pParam)
 		pCon->SetOption(INTERNET_OPTION_RECEIVE_TIMEOUT, 0x5265C00);
 		resultCode = postMethod.SendRequest(pCon, TRACKS_URL, dwFlags, pResponse);
 		
-		CString sharing;
-		tParam->trackProperties->Lookup(TRACK_SHARING, sharing);
-		pMessage = GetMessageFromResponse(
-			resultCode, pResponse, sharing == PRIVATE);
+		pMessage = GetMessageFromResponse(resultCode, pResponse);
 	}
 	catch(CFileException* e)
 	{
@@ -377,7 +373,7 @@ UINT SCConnector::PostFile(LPVOID pParam)
 	return 0;
 }
 
-CString* SCConnector::GetMessageFromResponse(int resultCode, CString* pResponse, bool isPrivate)
+CString* SCConnector::GetMessageFromResponse(DWORD resultCode, CString* pResponse)
 {
 	if(pResponse == NULL)
 		return NULL;
@@ -385,40 +381,24 @@ CString* SCConnector::GetMessageFromResponse(int resultCode, CString* pResponse,
 	if(resultCode == MultipartPostMethod::ENCODING_ERROR)
 		return new CString(*pResponse); // the plain error message
 
-	//Parse the permalink_url from the response
-	//e.g. "permalink_url": "http://soundcloud.com/jwagener/a-nice-track-title-1"
 	CString* pMessage = NULL;
-	tregex* pattern = NULL;
-	if(400 <= resultCode)
-		pattern = new tregex(_T("\"error_message\"\\s*?:\\s*?\"(.*?)\""));
+	UploadResult pResult(pResponse);
+	if(400 <= resultCode || pResult.HasError())
+	{
+		pMessage = pResult.GetErrorMessage();
+	}
 	else if(201 == resultCode)
-		pattern = new tregex(_T("\"permalink_url\"\\s*?:\\s*?\"(http.+?)\""));
-
-	if(pattern == NULL)
+	{
+		pMessage = pResult.GetPermaLink();
+	}
+	else
 	{
 		CString logMessage;
-		logMessage.Format(_T("Unable to get message from unexpected response: %d"), resultCode);
+		logMessage.Format(_T("Unexpected upload response: %d"), resultCode);
 		OutputDebugString(logMessage);
 		OutputDebugString(*pResponse);
-		return NULL;
 	}
-	
-	tmatch match;
-	if(regex_search(*pResponse, match, *pattern))
-		pMessage = new CString(match[1].first, match.length(1));
-	delete pattern;
 
-	if(isPrivate && pMessage != NULL)
-	{
-		pattern = new tregex(_T("\"secret_token\"\\s*?:\\s*?\"(.*?)\""));
-		if(regex_search(*pResponse, match, *pattern))
-		{
-			CString secretToken = CString(match[1].first, match.length(1));
-			CString permaLink = CString(*pMessage);
-			pMessage->Format(_T("%s/%s"), permaLink, secretToken);
-		}
-		delete pattern;
-	}
 	return pMessage;
 }
 

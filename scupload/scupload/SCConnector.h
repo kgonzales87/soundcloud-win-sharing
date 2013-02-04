@@ -78,7 +78,7 @@ private:
 	static UINT RequestProfile(LPVOID pParam);
 	static UINT PostFile(LPVOID pParam);
 	static void UploadProgress(DWORD progress, DWORD total);
-	static CString* GetMessageFromResponse(int resultCode, CString* pResponse, bool isPrivate);
+	static CString* GetMessageFromResponse(DWORD resultCode, CString* pResponse);
 	
 	static const INTERNET_PORT PORT;
 	static const CString SERVER;

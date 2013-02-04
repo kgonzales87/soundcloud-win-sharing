@@ -57,26 +57,12 @@ void UserProfile::SetConnections(CString*& json)
 	{
 		ASSERT(root[i].isObject());
 		
-		CString displayName;
 		CStringA type = root[i].get("type", "").asCString();
-		CStringA aDisplayName = root[i].get("display_name", "").asCString();
+		Json::Value displayNameValue = root[i].get("display_name", "");
 
 		// jsoncpp retains the original encoding in raw char buffer
 		// we assume UTF-8 multibyte encoding and transform the buffer accordingly
-		CStringW wDisplayName;
-		int wLength = MultiByteToWideChar(CP_UTF8, 0, aDisplayName, -1, NULL, 0);
-		LPWSTR wBuffer = wDisplayName.GetBuffer(wLength);
-		if(MultiByteToWideChar(CP_UTF8, 0, aDisplayName, -1, wBuffer, wLength) != 0)
-		{
-			CW2T tBuffer(wDisplayName);
-			displayName.Format(_T("%s"), tBuffer);
-		}
-		else
-		{
-			CA2T aBuffer(aDisplayName);
-			displayName.Format(_T("%s"), aBuffer);
-		}
-		wDisplayName.ReleaseBuffer();
+		CString displayName = WebUtility::FromUTF8MultiByte(displayNameValue.asCString());
 
 		//bool publish = root[i].get("post_publish", false).asBool();
 		int cid = root[i].get("id", -1).asInt();
