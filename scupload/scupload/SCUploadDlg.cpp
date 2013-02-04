@@ -35,7 +35,7 @@ SCUploadDlg::SCUploadDlg(CWnd* pParent /*=NULL*/)
 	m_BackgroundColor = RGB(245, 245, 245);
 	m_BackgroundBrush.CreateSolidBrush(m_BackgroundColor);
 
-	m_Size1.SetSize(400, 480); // Auth / SUSI View
+	m_Size1.SetSize(400, 500); // Auth / SUSI View
 	m_Size2.SetSize(540, 370); // Upload config form and progress view
 	m_Size3.SetSize(650, 390); // Facebook permission page size
 }
@@ -440,7 +440,18 @@ void SCUploadDlg::OnNavigateComplete(LPDISPATCH pDisp, VARIANT* szUrl)
 	else
 	{
 		//Parse the access_token from the redirect
-		CString token = WebUtility::GetFieldValueFromUrl(url, _T("access_token"));
+		CString token;
+		if(m_appState != SUSI_FB)
+		{
+			token = WebUtility::GetFieldValueFromUrl(url, _T("access_token"));
+		}
+		else
+		{
+			CString returnTo = WebUtility::UrlDecode(
+				WebUtility::GetFieldValueFromUrl(url, _T("returnTo")));
+			token = WebUtility::GetFieldValueFromUrl(returnTo, _T("access_token"));
+		}
+
 		if(!token.IsEmpty())
 		{
 			m_Connector.SetAccessToken(token);
